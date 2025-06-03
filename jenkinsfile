@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    triggers {
+        cron('H/5 * * * *') // Run every 5 minutes (for demo)
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git 'https://github.com/your-username/python-pipeline-project.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'pip install pytest'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh 'python test_app.py'
+            }
+        }
+
+        stage('Archive Artifacts') {
+            steps {
+                archiveArtifacts artifacts: '*.py', fingerprint: true
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Build Successful!"
+        }
+        failure {
+            echo "Build Failed!"
+        }
+    }
+}
